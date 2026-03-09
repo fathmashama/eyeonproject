@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Dashboard</title>
+</head>
+<body>
+    <h2>Welcome {{ name }}</h2>
+
+    <h3>Your Attendance</h3>
+    {{ table | safe }}
+
+    <br>
+    <a href="/logout">Logout</a>
+</body>
+</html>
