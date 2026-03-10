@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <h2>Admin Dashboard</h2>
+    <h3>Total Employees: {{ total }}</h3>
+    <h3>Present Today: {{ present }}</h3>
+
+    <h3>Full Attendance</h3>
+    {{ table | safe }}
+
+    <br>
+    <a href="/logout">Logout</a>
+</body>
+</html>
