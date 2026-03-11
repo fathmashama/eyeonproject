@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Registration - EyeOn</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .register-container {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+            padding: 2.5rem;
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .brand-icon {
+            font-size: 2.5rem;
+            color: #2563eb;
+            margin-bottom: 1rem;
+        }
+
+        .brand-name {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .brand-tagline {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0.5rem;
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-start;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            border-left: 4px solid #dc2626;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+            border-left: 4px solid #059669;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: white;
+        }
+
+        .form-group select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1.25rem;
+            padding-right: 2.5rem;
+            color: #1f2937;
+        }
+
+        .form-group select option {
+            color: #1f2937;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-group input[readonly] {
+            background-color: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .password-info {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-top: 0.5rem;
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 0.85rem;
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .register-btn:active {
+            transform: translateY(0);
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .links a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        .dataset-info {
+            background: #f0f9ff;
+            border-left: 4px solid #2563eb;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: #1e40af;
+        }
+
+        .dataset-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .dataset-tag {
+            background: white;
+            border: 1px solid #2563eb;
+            color: #2563eb;
+            padding: 0.35rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        @media (max-width: 500px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="brand">
+            <div class="brand-icon">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <div class="brand-name">EyeOn</div>
+            <div class="brand-tagline">Employee Registration</div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {% if category == 'error' %}
+                            <i class="fas fa-exclamation-circle"></i>
+                        {% else %}
+                            <i class="fas fa-check-circle"></i>
+                        {% endif %}
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="dataset-info">
+            <i class="fas fa-info-circle"></i> Your Employee ID must be registered in the system:
+            <div class="dataset-list">
+                {% for emp_id in valid_employees.keys()|list %}
+                    <span class="dataset-tag">{{ emp_id }}</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <form action="/register" method="post">
+            <div class="form-group">
+                <label for="employee_id">
+                    <i class="fas fa-id-card"></i> Employee ID *
+                </label>
+                <select id="employee_id" name="employee_id" onchange="updateNameField()" required>
+                    <option value="">-- Select your Employee ID --</option>
+                    {% for emp_id, emp_info in valid_employees.items() %}
+                        <option value="{{ emp_id }}" data-name="{{ emp_info.name }}">
+                            {{ emp_id }} - {{ emp_info.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <div class="password-info">Select your Employee ID from the list</div>
+            </div>
+
+            <div class="form-group">
+                <label for="name">
+                    <i class="fas fa-user"></i> Full Name (Auto-filled) *
+                </label>
+                <input type="text" id="name" name="name" placeholder="Your full name" readonly required>
+                <div class="password-info">This will be filled based on your Employee ID</div>
+            </div>
+
+            <div class="form-group">
+                <label for="username">
+                    <i class="fas fa-at"></i> Username *
+                </label>
+                <input type="text" id="username" name="username" placeholder="Choose a unique username (min 4 characters)" required>
+                <div class="password-info">This will be used to login along with password</div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">
+                    <i class="fas fa-envelope"></i> Email Address *
+                </label>
+                <input type="email" id="email" name="email" placeholder="your.email@company.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">
+                    <i class="fas fa-phone"></i> Phone Number *
+                </label>
+                <input type="tel" id="phone" name="phone" placeholder="+1234567890" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">
+                    <i class="fas fa-lock"></i> Password *
+                </label>
+                <input type="password" id="password" name="password" placeholder="At least 6 characters" required>
+                <div class="password-info">Minimum 6 characters required</div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirm_password">
+                    <i class="fas fa-lock"></i> Confirm Password *
+                </label>
+                <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter your password" required>
+            </div>
+
+            <button type="submit" class="register-btn">
+                <i class="fas fa-user-check"></i> Create Account
+            </button>
+        </form>
+
+        <div class="links">
+            Already registered? <a href="/">Login here</a>
+        </div>
+    </div>
+
+    <script>
+        function updateNameField() {
+            const select = document.getElementById('employee_id');
+            const nameField = document.getElementById('name');
+            
+            if (select.value) {
+                const selectedOption = select.options[select.selectedIndex];
+                const name = selectedOption.getAttribute('data-name');
+                nameField.value = name;
+            } else {
+                nameField.value = '';
+            }
+        }
+    </script>
+</body>
+</html>

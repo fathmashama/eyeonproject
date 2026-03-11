@@ -25,6 +25,10 @@ name_to_info = employee_info.set_index("Name")[["EmployeeID", "Email"]].to_dict(
 if not os.path.exists(ATTENDANCE_FOLDER):
     os.makedirs(ATTENDANCE_FOLDER)
 
+if not os.path.exists("attendance.csv"):
+    with open("attendance.csv", "w") as f:
+        f.write("EmployeeID,Name,Email,DateTime\n")
+
 today_date = datetime.now().strftime("%Y-%m-%d")
 attendance_file = os.path.join(ATTENDANCE_FOLDER, f"{today_date}.xlsx")
 
@@ -69,8 +73,14 @@ while True:
                 if name not in marked_names:
                     info = name_to_info.get(name, {"EmployeeID": "Unknown", "Email": "Unknown"})
                     now = datetime.now().strftime("%H:%M:%S")
+                    now_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     attendance_df.loc[len(attendance_df)] = [info["EmployeeID"], name, info["Email"], now]
                     marked_names.add(name)
+                    
+                    # Append to attendance.csv
+                    with open("attendance.csv", "a") as f:
+                        f.write(f"{info['EmployeeID']},{name},{info['Email']},{now_datetime}\n")
+
                     print(f"✅ {name} marked present at {now}")
 
                 label = name

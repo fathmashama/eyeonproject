@@ -1,0 +1,119 @@
+🚀 QUICK START GUIDE - EyeOn Dashboard
+
+═══════════════════════════════════════════════════════════════
+
+STEP 1: START THE APPLICATION
+────────────────────────────────────────────────────────────────
+Open PowerShell/CMD and run:
+
+    cd c:\Users\aysha\Desktop\eyeonproject
+    python app.py
+
+You should see:
+    * Running on http://127.0.0.1:5000
+
+═══════════════════════════════════════════════════════════════
+
+STEP 2: OPEN IN BROWSER
+────────────────────────────────────────────────────────────────
+Go to: http://localhost:5000
+
+═══════════════════════════════════════════════════════════════
+
+STEP 3: LOGIN WITH TEST CREDENTIALS
+────────────────────────────────────────────────────────────────
+
+EMPLOYEE LOGIN:
+  Username: ayshathnafiakm03
+  Password: 2023B144
+
+(Or use any employee from employee_info.csv)
+
+ADMIN LOGIN (optional):
+  Username: admin
+  Password: admin123
+
+═══════════════════════════════════════════════════════════════
+
+FEATURES TO TRY:
+────────────────────────────────────────────────────────────────
+
+✅ Check-In
+   - Click "Check-In" button to record check-in time
+   - Check-in time appears on dashboard
+
+🚪 Check-Out
+   - Click "Check-Out" button to record check-out time
+   - Working hours automatically calculated
+
+📊 Attendance Summary
+   - View 90-day attendance statistics
+   - See total, present, absent days
+   - View attendance percentage
+
+🗓️ Request Leave
+   - Click "Request Leave" button
+   - Enter dates and reason
+   - Leave request status shown in dashboard
+
+📋 View History
+   - See all attendance records in table format
+   - Check-in/out times and status
+
+🔔 Notifications
+   - View system notifications
+   - See important updates
+
+═══════════════════════════════════════════════════════════════
+
+TROUBLESHOOTING:
+────────────────────────────────────────────────────────────────
+
+Issue: "Address already in use"
+Fix: Another app is using port 5000
+     Edit app.py, change: app.run(debug=True, port=5001)
+
+Issue: Database error
+Fix: Run initialization again:
+     python init_db.py
+
+Issue: CSS not loading / Page looks plain
+Fix: Hard refresh browser (Ctrl+Shift+R)
+
+═══════════════════════════════════════════════════════════════
+
+KEY FILES:
+────────────────────────────────────────────────────────────────
+
+app.py                      - Main Flask application
+employee_dashboard.db       - SQLite database
+employee_info.csv          - Employee records
+templates/
+  └─ employee_dashboard.html - Professional dashboard UI
+static/
+  └─ style.css              - Global styles
+
+═══════════════════════════════════════════════════════════════
+
+CHANGING LOGIN CREDENTIALS:
+────────────────────────────────────────────────────────────────
+
+To reset database with fresh employees:
+1. Delete: employee_dashboard.db
+2. Run: python init_db.py
+3. New credentials will be displayed
+
+═══════════════════════════════════════════════════════════════
+
+ADMIN FEATURES (Coming Soon):
+────────────────────────────────────────────────────────────────
+☐ Register new employees
+☐ View attendance reports
+☐ Approve/reject leave requests
+☐ Generate attendance reports
+
+═══════════════════════════════════════════════════════════════
+
+Questions? Check README.md for more details!
+
+Happy tracking! 📊

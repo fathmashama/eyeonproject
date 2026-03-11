@@ -64,12 +64,30 @@ delay = timedelta(minutes=5)
 attendance_dir = "AttendanceRecords"
 os.makedirs(attendance_dir, exist_ok=True)
 
+if not os.path.exists("attendance.csv"):
+    with open("attendance.csv", "w") as f:
+        f.write("EmployeeID,Name,Email,DateTime\n")
+
 while True:
     ret, frame = video.read()
     if not ret:
         break
 
+    if frame is None or frame.size == 0:
+        continue
+
+    # Handle 4-channel (BGRA) frames from some webcams
+    if len(frame.shape) == 3 and frame.shape[2] == 4:
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGRA2BGR)
+
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+    # Ensure the image is contiguous uint8 (required by dlib)
+    if rgb_frame.dtype != np.uint8:
+        rgb_frame = rgb_frame.astype(np.uint8)
+    if not rgb_frame.flags['C_CONTIGUOUS']:
+        rgb_frame = np.ascontiguousarray(rgb_frame)
+
     face_locations = face_recognition.face_locations(rgb_frame)
     face_encodings = face_recognition.face_encodings(rgb_frame, face_locations)
 
@@ -101,6 +119,10 @@ while True:
                     emp_id = employee_info.get(name, {}).get("EmployeeID", "N/A")
                     email = employee_info.get(name, {}).get("Email", "N/A")
                     write_to_excel(emp_id, name, email, current_date, current_time)
+
+                    now_datetime = now.strftime("%Y-%m-%d %H:%M:%S")
+                    with open("attendance.csv", "a") as f:
+                        f.write(f"{emp_id},{name},{email},{now_datetime}\n")
 
         # Draw box and name
         top, right, bottom, left = face_location

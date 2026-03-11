@@ -1,17 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Admin Dashboard</title>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - EyeOn</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h2>Admin Dashboard</h2>
-    <h3>Total Employees: {{ total }}</h3>
-    <h3>Present Today: {{ present }}</h3>
+    <div class="container dashboard-container">
+        <h2>Admin Dashboard</h2>
+        
+        <div style="display: flex; gap: 2rem; justify-content: space-around; margin-bottom: 2rem;">
+            <div style="background: rgba(255, 255, 255, 0.05); padding: 1.5rem; border-radius: 12px; text-align: center; flex: 1; border: 1px solid var(--border-color);">
+                <h3 style="margin: 0; font-size: 1rem;">Total Employees</h3>
+                <p style="font-size: 2rem; font-weight: 700; color: var(--primary); margin: 0.5rem 0 0;">{{ total }}</p>
+            </div>
+            <div style="background: rgba(255, 255, 255, 0.05); padding: 1.5rem; border-radius: 12px; text-align: center; flex: 1; border: 1px solid var(--border-color);">
+                <h3 style="margin: 0; font-size: 1rem;">Present Today</h3>
+                <p style="font-size: 2rem; font-weight: 700; color: #10b981; margin: 0.5rem 0 0;">{{ present }}</p>
+            </div>
+        </div>
 
-    <h3>Full Attendance</h3>
-    {{ table | safe }}
+        <h3>Full Attendance Logs</h3>
+        <div style="overflow-x: auto;">
+            {{ table | safe }}
+        </div>
 
-    <br>
-    <a href="/logout">Logout</a>
+        <div class="links">
+            <a href="/logout" class="btn">Logout</a>
+        </div>
+    </div>
 </body>
 </html>

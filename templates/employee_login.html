@@ -1,14 +1,323 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Employee Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Login - EyeOn</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            max-width: 900px;
+            width: 90%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .login-section {
+            padding: 3rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .brand-icon {
+            font-size: 3rem;
+            color: #2563eb;
+            margin-bottom: 1rem;
+        }
+
+        .brand-name {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .brand-tagline {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0.5rem;
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-start;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            border-left: 4px solid #dc2626;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #9ca3af;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .links a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 0 0.5rem;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        .brand-image {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 3rem 2rem;
+        }
+
+        .brand-image-icon {
+            font-size: 5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .brand-image-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .brand-image-desc {
+            text-align: center;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                grid-template-columns: 1fr;
+            }
+
+            .brand-image {
+                display: none;
+            }
+
+            .login-section {
+                padding: 2rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h2>Employee Login</h2>
-    <form action="/employee_login" method="post">
-        Username: <input type="text" name="username"><br><br>
-        Password: <input type="password" name="password"><br><br>
-        <button type="submit">Login</button>
-    </form>
+    <div class="login-container">
+        <div class="login-section">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <div class="brand-name">EyeOn</div>
+                <div class="brand-tagline">Face Recognition Attendance System</div>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form action="/employee_login" method="post">
+                <div class="form-group">
+                    <label for="username">
+                        <i class="fas fa-user"></i> Username
+                    </label>
+                    <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </form>
+
+            <div class="links">
+                <a href="/register">Register</a> | 
+                <a href="/admin">Admin Login</a>
+            </div>
+        </div>
+
+        <div class="brand-image">
+            <div class="brand-image-icon">
+                <i class="fas fa-camera"></i>
+            </div>
+            <div class="brand-image-text">Smart Attendance</div>
+            <div class="brand-image-desc">
+                Secure face recognition technology for accurate attendance tracking
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+            }
+
+            .login-section {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-section">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <div class="brand-name">EyeOn</div>
+                <div class="brand-tagline">Employee Attendance System</div>
+            </div>
+
+            <form action="/employee_login" method="post">
+                {% if error %}
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>{{ error }}</span>
+                    </div>
+                {% endif %}
+
+                <div class="form-group">
+                    <label for="username">
+                        <i class="fas fa-user"></i> Username
+                    </label>
+                    <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </form>
+
+            <div class="links">
+                <a href="/admin">Admin Login</a> | 
+                <a href="/register">Register</a>
+            </div>
+        </div>
+
+        <div class="brand-image">
+            <div class="brand-image-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="brand-image-text">Real-Time Attendance</div>
+            <div class="brand-image-desc">
+                Track your attendance with precision. Stay connected with your team.
+            </div>
+        </div>
+    </div>
 </body>
 </html>

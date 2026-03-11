@@ -1,15 +1,646 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Employee Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Dashboard - EyeOn</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-600: #4b5563;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--gray-900);
+        }
+
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-menu {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .navbar-menu span {
+            font-weight: 500;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .welcome-section {
+            background: white;
+            border-radius: 1.25rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid var(--primary);
+        }
+
+        .welcome-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-subtitle {
+            color: var(--gray-600);
+            font-size: 0.95rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 1.25rem;
+            padding: 1.75rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-title i {
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--gray-50);
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--gray-600);
+            font-size: 0.9rem;
+        }
+
+        .info-value {
+            color: var(--gray-900);
+            font-weight: 500;
+        }
+
+        .attendance-status {
+            background: var(--gray-50);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .status-checked {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .status-not-checked {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .time-display {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 1rem 0;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--gray-50);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 700;
+            color: var(--gray-900);
+            border-bottom: 2px solid var(--gray-200);
+            font-size: 0.9rem;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+            font-size: 0.9rem;
+        }
+
+        tbody tr:hover {
+            background: var(--gray-50);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .badge-pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .badge-rejected {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .leave-item {
+            background: var(--gray-50);
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .leave-dates {
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .leave-reason {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray-600);
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .two-column-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 1.25rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--gray-900);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--gray-900);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 0.5rem;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        .btn-cancel {
+            background: var(--gray-200);
+            color: var(--gray-900);
+        }
+
+        .btn-cancel:hover {
+            background: var(--gray-300);
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .dashboard-grid,
+            .two-column-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome-title {
+                font-size: 1.5rem;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h2>Welcome {{ name }}</h2>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <i class="fas fa-eye"></i> EyeOn Dashboard
+        </div>
+        <div class="navbar-menu">
+            <span>{{ employee_name }}</span>
+            <a href="/logout" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </nav>
 
-    <h3>Your Attendance</h3>
-    {{ table | safe }}
+    <div class="container">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <h1 class="welcome-title">
+                <i class="fas fa-wave-hand"></i> Welcome back, {{ employee_name }}!
+            </h1>
+            <p class="welcome-subtitle">{{ today }} • Face Recognition Attendance System</p>
+        </div>
 
-    <br>
-    <a href="/logout">Logout</a>
+        <!-- Main Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Profile Information Card -->
+            <div class="card">
+                <h3 class="card-title">
+                    <i class="fas fa-user-circle"></i> Profile Information
+                </h3>
+                <div class="info-row">
+                    <span class="info-label">Employee ID</span>
+                    <span class="info-value">{{ employee_id }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Name</span>
+                    <span class="info-value">{{ emp_info[0] if emp_info else 'N/A' }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Email</span>
+                    <span class="info-value">{{ emp_info[1] if emp_info else 'N/A' }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Phone</span>
+                    <span class="info-value">{{ emp_info[2] if emp_info else 'N/A' }}</span>
+                </div>
+            </div>
+
+            <!-- Today's Attendance Card -->
+            <div class="card">
+                <h3 class="card-title">
+                    <i class="fas fa-calendar-check"></i> Today's Attendance
+                </h3>
+                <div class="attendance-status">
+                    {% if today_attendance and today_attendance[0] %}
+                        <span class="status-badge status-checked">
+                            <i class="fas fa-check-circle"></i> Checked In
+                        </span>
+                        <div style="margin-top: 1rem;">
+                            <p style="color: var(--gray-600); margin-bottom: 0.5rem; font-size: 0.9rem;">Check-In Time</p>
+                            <div class="time-display">{{ today_attendance[0] }}</div>
+                        </div>
+                        {% if today_attendance[1] %}
+                            <div style="margin-top: 1rem;">
+                                <p style="color: var(--gray-600); margin-bottom: 0.5rem; font-size: 0.9rem;">Check-Out Time</p>
+                                <div class="time-display" style="font-size: 1.5rem;">{{ today_attendance[1] }}</div>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <span class="status-badge status-not-checked">
+                            <i class="fas fa-clock"></i> Not Checked In
+                        </span>
+                        <p style="color: var(--gray-600); margin-top: 1rem; font-size: 0.9rem;">
+                            Attendance will be recorded when face is recognized
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Two Column Section -->
+        <div class="two-column-grid">
+            <!-- Attendance History Card -->
+            <div class="card">
+                <h3 class="card-title">
+                    <i class="fas fa-history"></i> Attendance History
+                </h3>
+                {% if attendance_history %}
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Check-In</th>
+                                    <th>Check-Out</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in attendance_history %}
+                                    <tr>
+                                        <td>{{ record[0] }}</td>
+                                        <td>
+                                            {% if record[1] %}
+                                                <span class="badge badge-success">{{ record[1] }}</span>
+                                            {% else %}
+                                                <span style="color: var(--gray-400);">--</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if record[2] %}
+                                                <span class="badge badge-success">{{ record[2] }}</span>
+                                            {% else %}
+                                                <span style="color: var(--gray-400);">--</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="fas fa-inbox"></i></div>
+                        <p>No attendance records yet</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Leave Management Card -->
+            <div class="card">
+                <h3 class="card-title">
+                    <i class="fas fa-calendar-times"></i> Leave Requests
+                </h3>
+                <button class="btn btn-primary" onclick="openLeaveModal()">
+                    <i class="fas fa-plus"></i> Request Leave
+                </button>
+                
+                <div style="margin-top: 1.5rem;">
+                    {% if leave_requests %}
+                        {% for leave in leave_requests %}
+                            <div class="leave-item">
+                                <div class="leave-dates">
+                                    <i class="fas fa-calendar-alt"></i> {{ leave[0] }} to {{ leave[1] }}
+                                </div>
+                                <div class="leave-reason">{{ leave[2] or 'No reason provided' }}</div>
+                                <span class="badge {% if leave[3] == 'approved' %}badge-success{% elif leave[3] == 'rejected' %}badge-rejected{% else %}badge-pending{% endif %}">
+                                    {{ leave[3] }}
+                                </span>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <div class="empty-icon"><i class="fas fa-leaf"></i></div>
+                            <p>No leave requests</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leave Request Modal -->
+    <div id="leaveModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fas fa-calendar-alt"></i> Request Leave
+            </div>
+            <form action="/api/leave_request" method="post">
+                <div class="form-group">
+                    <label for="fromDate">From Date</label>
+                    <input type="date" id="fromDate" name="from_date" required>
+                </div>
+                <div class="form-group">
+                    <label for="toDate">To Date</label>
+                    <input type="date" id="toDate" name="to_date" required>
+                </div>
+                <div class="form-group">
+                    <label for="reason">Reason (Optional)</label>
+                    <textarea id="reason" name="reason" rows="4" placeholder="Enter reason for leave..."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-cancel" onclick="closeLeaveModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Submit Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openLeaveModal() {
+            document.getElementById('leaveModal').classList.add('active');
+        }
+
+        function closeLeaveModal() {
+            document.getElementById('leaveModal').classList.remove('active');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('leaveModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLeaveModal();
+            }
+        });
+    </script>
 </body>
 </html>
