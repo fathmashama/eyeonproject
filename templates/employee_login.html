@@ -22,6 +22,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 1rem;
         }
 
         .login-container {
@@ -29,10 +30,12 @@
             border-radius: 1.5rem;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             overflow: hidden;
-            max-width: 900px;
-            width: 90%;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            max-width: 500px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         .login-section {
@@ -40,6 +43,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            width: 100%;
         }
 
         .brand {
@@ -153,46 +157,21 @@
             text-decoration: underline;
         }
 
-        .brand-image {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            padding: 3rem 2rem;
-        }
-
-        .brand-image-icon {
-            font-size: 5rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-        }
-
-        .brand-image-text {
-            font-size: 1.5rem;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 1rem;
-        }
-
-        .brand-image-desc {
-            text-align: center;
-            opacity: 0.9;
-            line-height: 1.5;
-        }
-
         @media (max-width: 768px) {
             .login-container {
-                grid-template-columns: 1fr;
-            }
-
-            .brand-image {
-                display: none;
+                max-width: 100%;
             }
 
             .login-section {
                 padding: 2rem;
+            }
+
+            .brand-name {
+                font-size: 1.5rem;
+            }
+
+            .brand-icon {
+                font-size: 2.5rem;
             }
         }
     </style>
@@ -242,80 +221,6 @@
             <div class="links">
                 <a href="/register">Register</a> | 
                 <a href="/admin">Admin Login</a>
-            </div>
-        </div>
-
-        <div class="brand-image">
-            <div class="brand-image-icon">
-                <i class="fas fa-camera"></i>
-            </div>
-            <div class="brand-image-text">Smart Attendance</div>
-            <div class="brand-image-desc">
-                Secure face recognition technology for accurate attendance tracking
-            </div>
-        </div>
-    </div>
-</body>
-</html>
-            }
-
-            .login-section {
-                padding: 2rem;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="login-container">
-        <div class="login-section">
-            <div class="brand">
-                <div class="brand-icon">
-                    <i class="fas fa-eye"></i>
-                </div>
-                <div class="brand-name">EyeOn</div>
-                <div class="brand-tagline">Employee Attendance System</div>
-            </div>
-
-            <form action="/employee_login" method="post">
-                {% if error %}
-                    <div class="error-message">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span>{{ error }}</span>
-                    </div>
-                {% endif %}
-
-                <div class="form-group">
-                    <label for="username">
-                        <i class="fas fa-user"></i> Username
-                    </label>
-                    <input type="text" id="username" name="username" placeholder="Enter your username" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="password">
-                        <i class="fas fa-lock"></i> Password
-                    </label>
-                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
-                </div>
-
-                <button type="submit" class="login-btn">
-                    <i class="fas fa-sign-in-alt"></i> Login
-                </button>
-            </form>
-
-            <div class="links">
-                <a href="/admin">Admin Login</a> | 
-                <a href="/register">Register</a>
-            </div>
-        </div>
-
-        <div class="brand-image">
-            <div class="brand-image-icon">
-                <i class="fas fa-clock"></i>
-            </div>
-            <div class="brand-image-text">Real-Time Attendance</div>
-            <div class="brand-image-desc">
-                Track your attendance with precision. Stay connected with your team.
             </div>
         </div>
     </div>
