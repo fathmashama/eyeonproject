@@ -381,16 +381,20 @@ def employee_dashboard():
         
         # Get today's attendance
         today = datetime.now().strftime("%Y-%m-%d")
+        
+        # Get filtered date from request (default to today)
+        selected_date = request.args.get("date", today)
+        
         c.execute("""SELECT check_in, check_out, COALESCE(working_hours, 0), COALESCE(status, 'Present') 
                      FROM attendance WHERE employee_id=? AND date=?""", 
-                 (employee_id, today))
+                 (employee_id, selected_date))
         today_attendance = c.fetchone()
         
-        # Get attendance history (last 30 records)
+        # Get attendance history for the selected date
         c.execute("""SELECT date, check_in, check_out, COALESCE(working_hours, 0), COALESCE(status, 'Present')
-                     FROM attendance WHERE employee_id=? 
-                     ORDER BY date DESC LIMIT 30""", 
-                 (employee_id,))
+                     FROM attendance WHERE employee_id=? AND date=?
+                     ORDER BY date DESC""", 
+                 (employee_id, selected_date))
         attendance_history = c.fetchall()
         
         # Get leave requests
@@ -400,16 +404,28 @@ def employee_dashboard():
                  (employee_id,))
         leave_requests = c.fetchall()
         
-        # Get notifications
-        c.execute("""SELECT id, title, message, created_at 
+        # Get notifications (latest 5)
+        c.execute("""SELECT message, created_at 
                      FROM notifications 
-                     ORDER BY created_at DESC LIMIT 10""")
+                     ORDER BY created_at DESC LIMIT 5""")
         notifications = c.fetchall()
+        
+        # DEBUG: Print notifications to console
+        print("DEBUG - Notifications fetched from DB:", notifications)
         
         conn.close()
         
         # Calculate attendance summary
         attendance_summary = calculate_attendance_summary(employee_id)
+        
+        # Generate dynamic label for attendance section
+        if selected_date == today:
+            attendance_label = "Today's Attendance"
+        else:
+            attendance_label = f"Attendance for {selected_date}"
+        
+        # DEBUG: Verify notifications before passing to template
+        print("DEBUG - Passing to template - notifications count:", len(notifications) if notifications else 0)
         
         return render_template(
             "employee_dashboard.html",
@@ -421,6 +437,8 @@ def employee_dashboard():
             leave_requests=leave_requests,
             notifications=notifications,
             today=today,
+            selected_date=selected_date,
+            attendance_label=attendance_label,
             attendance_summary=attendance_summary
         )
     except Exception as e:
@@ -455,73 +473,138 @@ def admin_dashboard():
         
         # Get all employees count
         c.execute("SELECT COUNT(*) FROM employees")
-        total_employees = c.fetchone()[0]
+        total = c.fetchone()[0]
         
         # Get today's attendance
         today = datetime.now().strftime("%Y-%m-%d")
-        c.execute("""SELECT COUNT(DISTINCT employee_id) FROM attendance 
-                     WHERE date=? AND check_in IS NOT NULL""", (today,))
-        present_today = c.fetchone()[0]
         
-        # Get all attendance records with COALESCE for new columns
+        # Get filtered date from request (default to today)
+        selected_date = request.args.get("date", today)
+        
+        c.execute("""SELECT COUNT(DISTINCT employee_id) FROM attendance 
+                     WHERE date=? AND check_in IS NOT NULL""", (selected_date,))
+        present = c.fetchone()[0]
+        
+        # Calculate absent employees
+        absent = total - present
+        
+        # Get attendance records filtered by selected date - JOIN employees and attendance
         c.execute("""SELECT e.employee_id, e.name, a.date, a.check_in, a.check_out, 
-                            COALESCE(a.working_hours, 0), COALESCE(a.status, 'Present')
-                     FROM employees e 
-                     LEFT JOIN attendance a ON e.employee_id = a.employee_id
-                     ORDER BY a.date DESC LIMIT 100""")
+                            COALESCE(a.status, 'Present')
+                     FROM attendance a
+                     JOIN employees e ON e.employee_id = a.employee_id
+                     WHERE a.date = ?
+                     ORDER BY a.check_in DESC""", (selected_date,))
         attendance_records = c.fetchall()
         
-        # Get pending leave requests
+        # Get all pending leave requests with employee names
         c.execute("""SELECT lr.id, e.name, lr.from_date, lr.to_date, lr.reason, lr.status
                      FROM leave_requests lr
                      JOIN employees e ON lr.employee_id = e.employee_id
                      ORDER BY lr.created_at DESC""")
         leave_requests = c.fetchall()
         
-        # Get all notifications
-        c.execute("""SELECT id, title, message, created_at 
-                     FROM notifications 
-                     ORDER BY created_at DESC LIMIT 20""")
-        notifications = c.fetchall()
+        # Get all registered employees
+        c.execute("SELECT employee_id, name, email FROM employees")
+        employees = c.fetchall()
+        
+        # Get list of employees present today
+        c.execute("""SELECT DISTINCT e.name FROM employees e
+                     JOIN attendance a ON e.employee_id = a.employee_id
+                     WHERE a.date = ? AND a.check_in IS NOT NULL
+                     ORDER BY e.name ASC""", (today,))
+        present_today_list = [row[0] for row in c.fetchall()]
+        
+        # Get list of employees absent today
+        c.execute("""SELECT e.name FROM employees e
+                     WHERE e.employee_id NOT IN (
+                        SELECT DISTINCT employee_id FROM attendance
+                        WHERE date = ? AND check_in IS NOT NULL
+                     )
+                     ORDER BY e.name ASC""", (today,))
+        absent_today_list = [row[0] for row in c.fetchall()]
         
         conn.close()
         
-        # Convert to list of dicts for template
-        attendance_list = []
-        for record in attendance_records:
-            attendance_list.append({
-                'employee_id': record[0],
-                'name': record[1],
-                'date': record[2],
-                'check_in': record[3],
-                'check_out': record[4],
-                'working_hours': record[5],
-                'status': record[6]
-            })
-        
-        leave_list = []
-        for lr in leave_requests:
-            leave_list.append({
-                'id': lr[0],
-                'name': lr[1],
-                'from_date': lr[2],
-                'to_date': lr[3],
-                'reason': lr[4],
-                'status': lr[5]
-            })
+        # Generate HTML table from attendance records
+        if attendance_records:
+            table_html = '<table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">'
+            table_html += '<thead style="background: rgba(255, 255, 255, 0.1); border-bottom: 2px solid var(--border-color);">'
+            table_html += '<tr>'
+            table_html += '<th style="padding: 0.75rem; text-align: left; border: 1px solid var(--border-color);">Employee ID</th>'
+            table_html += '<th style="padding: 0.75rem; text-align: left; border: 1px solid var(--border-color);">Name</th>'
+            table_html += '<th style="padding: 0.75rem; text-align: left; border: 1px solid var(--border-color);">Date</th>'
+            table_html += '<th style="padding: 0.75rem; text-align: left; border: 1px solid var(--border-color);">Check-In</th>'
+            table_html += '<th style="padding: 0.75rem; text-align: left; border: 1px solid var(--border-color);">Check-Out</th>'
+            table_html += '<th style="padding: 0.75rem; text-align: left; border: 1px solid var(--border-color);">Status</th>'
+            table_html += '</tr>'
+            table_html += '</thead>'
+            table_html += '<tbody>'
+            
+            for record in attendance_records:
+                employee_id = record[0] or 'N/A'
+                name = record[1] or 'Unknown'
+                date = record[2] or 'N/A'
+                check_in = record[3] or '-'
+                check_out = record[4] or '-'
+                status = record[5] or 'Present'
+                
+                table_html += '<tr style="border-bottom: 1px solid var(--border-color);">'
+                table_html += f'<td style="padding: 0.75rem; border: 1px solid var(--border-color);">{employee_id}</td>'
+                table_html += f'<td style="padding: 0.75rem; border: 1px solid var(--border-color);">{name}</td>'
+                table_html += f'<td style="padding: 0.75rem; border: 1px solid var(--border-color);">{date}</td>'
+                table_html += f'<td style="padding: 0.75rem; border: 1px solid var(--border-color);">{check_in}</td>'
+                table_html += f'<td style="padding: 0.75rem; border: 1px solid var(--border-color);">{check_out}</td>'
+                table_html += f'<td style="padding: 0.75rem; border: 1px solid var(--border-color);">{status}</td>'
+                table_html += '</tr>'
+            
+            table_html += '</tbody>'
+            table_html += '</table>'
+        else:
+            table_html = '<p style="color: var(--text-secondary); font-style: italic;">No attendance records for selected date</p>'
         
         return render_template(
             "admin_dashboard.html",
-            total_employees=total_employees,
-            present_today=present_today,
-            attendance_records=attendance_list,
-            leave_requests=leave_list,
-            notifications=notifications,
-            today=today
+            total=total,
+            present=present,
+            absent=absent,
+            table=table_html,
+            leave_requests=leave_requests,
+            employees=employees,
+            present_today_list=present_today_list,
+            absent_today_list=absent_today_list,
+            today=today,
+            selected_date=selected_date
         )
     except Exception as e:
         flash(f"Dashboard error: {str(e)}", "error")
         return redirect("/admin")
+
+# ============= NOTIFICATION API =============
+@app.route("/add_notification", methods=["POST"])
+def add_notification():
+    if "admin" not in session:
+        return {"status": "error", "message": "Not authorized"}, 401
+    
+    message = request.form.get("message", "").strip()
+    
+    if not message:
+        flash("Notification message cannot be empty!", "error")
+        return redirect("/admin_dashboard")
+    
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute("INSERT INTO notifications (title, message) VALUES (?, ?)", ("Notification", message))
+        conn.commit()
+        conn.close()
+        # DEBUG: Print inserted notification
+        print("DEBUG - Notification inserted:", message)
+        flash("Notification sent to all employees!", "success")
+        return redirect("/admin_dashboard")
+    except Exception as e:
+        flash(f"Error sending notification: {str(e)}", "error")
+        return redirect("/admin_dashboard")
 
 # ============= LOGOUT =============
 @app.route("/logout")
@@ -784,6 +867,36 @@ def get_attendance_summary():
     summary = calculate_attendance_summary(employee_id)
     
     return {"status": "success", "data": summary}, 200
+
+# ============= EMPLOYEE MANAGEMENT =============
+@app.route('/delete_employee/<employee_id>')
+def delete_employee(employee_id):
+    """Delete employee and related attendance records"""
+    if "admin" not in session:
+        flash("Unauthorized access", "error")
+        return redirect("/admin")
+    
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        
+        # Delete attendance records first (to avoid foreign key issues)
+        cursor.execute("DELETE FROM attendance WHERE employee_id = ?", (employee_id,))
+        
+        # Delete leave requests for the employee
+        cursor.execute("DELETE FROM leave_requests WHERE employee_id = ?", (employee_id,))
+        
+        # Delete the employee
+        cursor.execute("DELETE FROM employees WHERE employee_id = ?", (employee_id,))
+        
+        conn.commit()
+        conn.close()
+        
+        flash(f"Employee {employee_id} deleted successfully!", "success")
+    except Exception as e:
+        flash(f"Error deleting employee: {str(e)}", "error")
+    
+    return redirect('/admin_dashboard')
 
 if __name__ == "__main__":
     app.run(debug=True)

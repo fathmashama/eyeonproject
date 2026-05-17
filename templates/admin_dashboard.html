@@ -4,30 +4,421 @@
     <meta charset="UTF-8">
     <title>Admin Dashboard - EyeOn</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .admin-sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            padding-top: 20px;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.3);
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .admin-sidebar h3 {
+            color: white;
+            text-align: center;
+            margin: 0 0 30px 0;
+            padding: 0 15px;
+            font-size: 1.2rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 15px;
+        }
+
+        .admin-sidebar a {
+            display: block;
+            color: rgba(255, 255, 255, 0.85);
+            padding: 14px 20px;
+            text-decoration: none;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .admin-sidebar a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-left-color: #3498db;
+            color: white;
+            padding-left: 30px;
+        }
+
+        .admin-sidebar a.active {
+            background: #3498db;
+            border-left-color: #2980b9;
+            color: white;
+        }
+
+        .admin-sidebar a.logout-btn {
+            margin-top: 30px;
+            background: rgba(239, 68, 68, 0.1);
+            border-left-color: transparent;
+        }
+
+        .admin-sidebar a.logout-btn:hover {
+            background: #ef4444;
+            border-left-color: #dc2626;
+        }
+
+        .admin-main-content {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            padding: 0;
+        }
+
+        .dashboard-container {
+            margin: 0 !important;
+            padding: 0 !important;
+            max-width: 100% !important;
+            width: 100% !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+        }
+
+        .admin-content-section {
+            display: none;
+            padding: 30px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .admin-content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-header h2 {
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                width: 200px;
+            }
+
+            .admin-main-content {
+                margin-left: 200px;
+                width: calc(100% - 200px);
+            }
+
+            .admin-content-section {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .admin-sidebar {
+                width: 180px;
+            }
+
+            .admin-main-content {
+                margin-left: 180px;
+                width: calc(100% - 180px);
+            }
+
+            .admin-content-section {
+                padding: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="container dashboard-container">
-        <h2>Admin Dashboard</h2>
-        
-        <div style="display: flex; gap: 2rem; justify-content: space-around; margin-bottom: 2rem;">
-            <div style="background: rgba(255, 255, 255, 0.05); padding: 1.5rem; border-radius: 12px; text-align: center; flex: 1; border: 1px solid var(--border-color);">
-                <h3 style="margin: 0; font-size: 1rem;">Total Employees</h3>
-                <p style="font-size: 2rem; font-weight: 700; color: var(--primary); margin: 0.5rem 0 0;">{{ total }}</p>
+    <!-- Navigation Sidebar -->
+    <div class="admin-sidebar">
+        <h3>EyeOn Admin</h3>
+        <a href="#" onclick="showSection('dashboard')" class="active">📊 Dashboard</a>
+        <a href="#" onclick="showSection('attendance')">📋 Attendance Records</a>
+        <a href="#" onclick="showSection('employees')">👥 Employee Management</a>
+        <a href="#" onclick="showSection('leaves')">📅 Leave Requests</a>
+        <a href="#" onclick="showSection('notifications')">🔔 Notifications</a>
+        <a href="/logout" class="logout-btn">🚪 Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-main-content">
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="admin-content-section active">
+            <div class="section-header">
+                <h2>Dashboard</h2>
             </div>
-            <div style="background: rgba(255, 255, 255, 0.05); padding: 1.5rem; border-radius: 12px; text-align: center; flex: 1; border: 1px solid var(--border-color);">
-                <h3 style="margin: 0; font-size: 1rem;">Present Today</h3>
-                <p style="font-size: 2rem; font-weight: 700; color: #10b981; margin: 0.5rem 0 0;">{{ present }}</p>
+            
+            <div style="display: flex; gap: 2rem; justify-content: space-around; margin-bottom: 2rem;">
+                <div style="background: rgba(255, 255, 255, 0.05); padding: 1.5rem; border-radius: 12px; text-align: center; flex: 1; border: 1px solid var(--border-color);">
+                    <h3 style="margin: 0; font-size: 1rem;">Total Employees</h3>
+                    <p style="font-size: 2rem; font-weight: 700; color: var(--primary); margin: 0.5rem 0 0;">{{ total }}</p>
+                </div>
+                <div style="background: rgba(255, 255, 255, 0.05); padding: 1.5rem; border-radius: 12px; text-align: center; flex: 1; border: 1px solid var(--border-color);">
+                    <h3 style="margin: 0; font-size: 1rem;">Present Today</h3>
+                    <p style="font-size: 2rem; font-weight: 700; color: #10b981; margin: 0.5rem 0 0;">{{ present }}</p>
+                </div>
+                <div style="background: rgba(255, 255, 255, 0.05); padding: 1.5rem; border-radius: 12px; text-align: center; flex: 1; border: 1px solid var(--border-color);">
+                    <h3 style="margin: 0; font-size: 1rem;">Absent Today</h3>
+                    <p style="font-size: 2rem; font-weight: 700; color: #ef4444; margin: 0.5rem 0 0;">{{ absent }}</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 2rem;">Present Today</h3>
+            <div style="background: rgba(255, 255, 255, 0.05); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 1.5rem;">
+                {% if present_today_list %}
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        {% for name in present_today_list %}
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); font-size: 0.95rem; color: white;">
+                                <span style="color: #10b981; font-weight: 600;">✓</span> {{ name }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p style="color: var(--text-secondary); font-style: italic; margin: 0;">No employees present today</p>
+                {% endif %}
+            </div>
+
+            <h3>Absent Today</h3>
+            <div style="background: rgba(255, 255, 255, 0.05); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 1.5rem;">
+                {% if absent_today_list %}
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        {% for name in absent_today_list %}
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); font-size: 0.95rem; color: white;">
+                                <span style="color: #ef4444; font-weight: 600;">✗</span> {{ name }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p style="color: var(--text-secondary); font-style: italic; margin: 0;">All employees are present today</p>
+                {% endif %}
             </div>
         </div>
 
-        <h3>Full Attendance Logs</h3>
-        <div style="overflow-x: auto;">
-            {{ table | safe }}
+        <!-- Attendance Records Section -->
+        <div id="attendance" class="admin-content-section">
+            <div class="section-header">
+                <h2>Attendance Records</h2>
+            </div>
+
+            <div style="margin-bottom: 1.5rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                <form method="get" action="/admin_dashboard#attendance" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                    <input type="date" name="date" id="filterDate" value="{{ selected_date }}" style="padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem; font-family: inherit; font-size: 0.95rem;">
+                    <button type="submit" style="background: var(--primary-color); color: white; border: none; padding: 0.5rem 1.5rem; border-radius: 0.5rem; cursor: pointer; font-weight: 600; transition: all 0.3s ease;" onmouseover="this.style.background='var(--secondary-color)'" onmouseout="this.style.background='var(--primary-color)'">Filter</button>
+                    <a href="/admin_dashboard#attendance" style="background: #6b7280; color: white; border: none; padding: 0.5rem 1.5rem; border-radius: 0.5rem; cursor: pointer; font-weight: 600; text-decoration: none; display: inline-block; transition: all 0.3s ease;" onmouseover="this.style.background='#4b5563'" onmouseout="this.style.background='#6b7280'">Reset</a>
+                </form>
+            </div>
+            <div style="overflow-x: auto;">
+                {{ table | safe }}
+            </div>
         </div>
 
-        <div class="links">
-            <a href="/logout" class="btn">Logout</a>
+        <!-- Employee Management Section -->
+        <div id="employees" class="admin-content-section">
+            <div class="section-header">
+                <h2>Employee Management</h2>
+            </div>
+
+            <div style="overflow-x: auto;">
+                {% if employees %}
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+                        <thead style="background: rgba(255, 255, 255, 0.1); border-bottom: 2px solid var(--border-color);">
+                            <tr>
+                                <th style="padding: 0.75rem; text-align: left; border: 1px solid var(--border-color);">Employee ID</th>
+                                <th style="padding: 0.75rem; text-align: left; border: 1px solid var(--border-color);">Name</th>
+                                <th style="padding: 0.75rem; text-align: left; border: 1px solid var(--border-color);">Email</th>
+                                <th style="padding: 0.75rem; text-align: left; border: 1px solid var(--border-color);">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for emp in employees %}
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 0.75rem; border: 1px solid var(--border-color);">{{ emp[0] }}</td>
+                                    <td style="padding: 0.75rem; border: 1px solid var(--border-color);">{{ emp[1] }}</td>
+                                    <td style="padding: 0.75rem; border: 1px solid var(--border-color);">{{ emp[2] }}</td>
+                                    <td style="padding: 0.75rem; border: 1px solid var(--border-color);">
+                                        <a href="/delete_employee/{{ emp[0] }}" onclick="return confirm('Delete this employee? This will also remove all their attendance and leave records.');" style="background: #ef4444; color: white; padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none; cursor: pointer; font-weight: 600; display: inline-block;">Delete</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p style="color: var(--text-secondary); font-style: italic;">No employees registered</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Leave Requests Section -->
+        <div id="leaves" class="admin-content-section">
+            <div class="section-header">
+                <h2>Leave Requests</h2>
+            </div>
+
+            <div style="overflow-x: auto;">
+                {% if leave_requests %}
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+                        <thead style="background: rgba(255, 255, 255, 0.1); border-bottom: 2px solid var(--border-color);">
+                            <tr>
+                                <th style="padding: 0.75rem; text-align: left; border: 1px solid var(--border-color);">Employee Name</th>
+                                <th style="padding: 0.75rem; text-align: left; border: 1px solid var(--border-color);">From Date</th>
+                                <th style="padding: 0.75rem; text-align: left; border: 1px solid var(--border-color);">To Date</th>
+                                <th style="padding: 0.75rem; text-align: left; border: 1px solid var(--border-color);">Reason</th>
+                                <th style="padding: 0.75rem; text-align: left; border: 1px solid var(--border-color);">Status</th>
+                                <th style="padding: 0.75rem; text-align: left; border: 1px solid var(--border-color);">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for leave in leave_requests %}
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 0.75rem; border: 1px solid var(--border-color);">{{ leave[1] }}</td>
+                                    <td style="padding: 0.75rem; border: 1px solid var(--border-color);">{{ leave[2] }}</td>
+                                    <td style="padding: 0.75rem; border: 1px solid var(--border-color);">{{ leave[3] }}</td>
+                                    <td style="padding: 0.75rem; border: 1px solid var(--border-color);">{{ leave[4] or 'No reason' }}</td>
+                                    <td style="padding: 0.75rem; border: 1px solid var(--border-color);">
+                                        <span style="padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.875rem; font-weight: 600; 
+                                            {% if leave[5] == 'pending' %}
+                                                background: rgba(245, 158, 11, 0.2); color: #f59e0b;
+                                            {% elif leave[5] == 'approved' %}
+                                                background: rgba(16, 185, 129, 0.2); color: #10b981;
+                                            {% else %}
+                                                background: rgba(239, 68, 68, 0.2); color: #ef4444;
+                                            {% endif %}">
+                                            {{ leave[5] | capitalize }}
+                                        </span>
+                                    </td>
+                                    <td style="padding: 0.75rem; border: 1px solid var(--border-color);">
+                                        {% if leave[5] == 'pending' %}
+                                            <button onclick="approveLeave({{ leave[0] }})" style="background: #10b981; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; margin-right: 0.5rem; font-weight: 600;">Accept</button>
+                                            <button onclick="rejectLeave({{ leave[0] }})" style="background: #ef4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-weight: 600;">Reject</button>
+                                        {% else %}
+                                            <span style="color: var(--text-secondary); font-style: italic;">—</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p style="color: var(--text-secondary); font-style: italic;">No leave requests found</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Notifications Section -->
+        <div id="notifications" class="admin-content-section">
+            <div class="section-header">
+                <h2>Send Notification</h2>
+            </div>
+
+            <div style="background: rgba(255, 255, 255, 0.05); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 2rem; max-width: 600px;">
+                <form method="post" action="/add_notification">
+                    <div style="margin-bottom: 1rem;">
+                        <label for="message" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Message:</label>
+                        <textarea id="message" name="message" placeholder="Enter notification message..." required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; font-family: inherit; font-size: 0.95rem; resize: vertical; min-height: 100px; background: rgba(255, 255, 255, 0.05); color: inherit;"></textarea>
+                    </div>
+                    <button type="submit" style="background: #10b981; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600;">Send Notification</button>
+                </form>
+            </div>
         </div>
     </div>
+
+    <script>
+        // On page load, check URL hash and show appropriate section
+        document.addEventListener('DOMContentLoaded', function() {
+            const hash = window.location.hash.substring(1); // Remove the # character
+            
+            // If there's a hash and it matches a valid section, show it
+            if (hash && document.getElementById(hash)) {
+                showSection(hash);
+            }
+            // If filtered date was applied, show attendance section
+            else if (new URLSearchParams(window.location.search).has('date')) {
+                showSection('attendance');
+            }
+        });
+
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.admin-content-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Show selected section
+            const selectedSection = document.getElementById(sectionId);
+            if (selectedSection) {
+                selectedSection.classList.add('active');
+            }
+
+            // Update active menu item
+            const menuItems = document.querySelectorAll('.admin-sidebar a:not(.logout-btn)');
+            menuItems.forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Find and activate the corresponding menu item
+            const activeMenuItem = document.querySelector(`.admin-sidebar a[onclick="showSection('${sectionId}')"]`);
+            if (activeMenuItem) {
+                activeMenuItem.classList.add('active');
+            }
+        }
+
+        function approveLeave(leaveId) {
+            if (confirm('Are you sure you want to approve this leave request?')) {
+                fetch(`/api/approve_leave/${leaveId}`, { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            alert('Leave approved successfully!');
+                            location.reload();
+                        } else {
+                            alert('Error: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred');
+                    });
+            }
+        }
+
+        function rejectLeave(leaveId) {
+            if (confirm('Are you sure you want to reject this leave request?')) {
+                fetch(`/api/reject_leave/${leaveId}`, { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            alert('Leave rejected successfully!');
+                            location.reload();
+                        } else {
+                            alert('Error: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred');
+                    });
+            }
+        }
+    </script>
 </body>
 </html>
